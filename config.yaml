@@ -1,0 +1,69 @@
+blogs:
+  - name: Fly.io Blog
+    feed_url: https://fly.io/blog/feed.xml
+    url: https://fly.io/blog/
+  - name: Antirez
+    feed_url: https://antirez.com/rss
+    url: https://antirez.com/latest/0
+  - name: Arpit Bhayani
+    feed_url: https://arpitbhayani.me/rss.xml
+    url: https://arpitbhayani.me/blogs
+  - name: Astronomer Blog
+    url: https://www.astronomer.io/blog/
+  - name: Jane Street Blog
+    feed_url: https://blog.janestreet.com/feed.xml
+    url: https://blog.janestreet.com/
+  - name: Claude Developers
+    url: https://claude.dev/blog
+    html:
+      article_selector: a.post
+      title_selector: .p-title
+      date_selector: .p-date
+  - name: Stripe Developers
+    url: https://stripe.dev/blog
+    next_data:
+      items_path: props.pageProps.posts
+      title_key: title
+      date_key: date
+      url_key: slug
+      url_prefix: /blog/
+      excerpt_key: summary
+  - name: OpenAI Developers
+    feed_url: https://developers.openai.com/rss.xml
+    url: https://developers.openai.com/blog
+  - name: Software Engineering Daily
+    url: https://softwareengineeringdaily.com/articles/
+    html:
+      article_selector: article.post-card
+      title_selector: .post-card__title a
+      link_selector: .post-card__title a
+      date_selector: .post-card__meta > span:first-child
+  - name: Databricks Blog
+    url: https://www.databricks.com/blog
+    html:
+      article_selector: a[data-cy=ListingItem]
+      title_selector: h3
+      date_selector: time
+  - name: Netflix TechBlog
+    feed_url: https://netflixtechblog.com/feed
+    url: https://netflixtechblog.com/
+  - name: Google Developers AI
+    url: https://developers.googleblog.com/search/?technology_categories=AI
+    html:
+      article_selector: li.search-result
+      title_selector: h3.search-result__title a
+      link_selector: h3.search-result__title a
+      date_selector: .search-result__eyebrow
+  - name: NVIDIA Build AI Agents
+    feed_url: https://developer.nvidia.com/blog/tag/build-ai-agent/feed/
+    url: https://developer.nvidia.com/blog/tag/build-ai-agent/
+  - name: NVIDIA Inference Performance
+    feed_url: https://developer.nvidia.com/blog/tag/inference-performance/feed/
+    url: https://developer.nvidia.com/blog/tag/inference-performance/
+
+# With timestamp-only state, overlap would resend already-notified articles.
+overlap_minutes: 0
+request_timeout_seconds: 20
+max_articles_per_blog: 20
+# Up to this many independent article fetches/Claude summaries run concurrently.
+article_workers: 4

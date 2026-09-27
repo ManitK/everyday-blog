@@ -1,0 +1,18 @@
+# Copy this file to config.yaml and replace the examples with your blogs.
+# Discovery is attempted in this order whenever the corresponding URL is set:
+# feed, sitemap, then HTML. `html` is useful for sites with neither a feed nor sitemap.
+blogs:
+  - name: Example engineering blog
+    feed_url: https://example.com/feed.xml
+    sitemap_url: https://example.com/sitemap.xml
+    url: https://example.com/blog
+    html:
+      article_selector: article
+      title_selector: h2, h3
+      link_selector: a
+      date_selector: time
+
+# A timestamp-only design cannot overlap safely without resending posts.
+overlap_minutes: 0
+request_timeout_seconds: 20
+max_articles_per_blog: 20
