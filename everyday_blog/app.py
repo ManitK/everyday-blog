@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from .claude import summarize
+from .llm import summarize
 from .discovery import discover
 from .extract import fetch_excerpt, useful_excerpt
 from .http import session
