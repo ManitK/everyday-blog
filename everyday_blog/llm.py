@@ -27,7 +27,7 @@ Excerpt:
 {excerpt}"""
 
     response = client.chat.completions.create(
-        model=model,  # keep your existing model variable
+        model=os.getenv("GROQ_MODEL"),  # keep your existing model variable
         messages=messages,  # keep your existing messages variable
         reasoning_effort="none",
         max_completion_tokens=256,
