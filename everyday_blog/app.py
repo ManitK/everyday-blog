@@ -89,7 +89,7 @@ def run(config_path: str = "config.yaml", state_path: str = "state.json") -> int
             if error:
                 url, exc = error
                 failures.append(url)
-                LOG.error("Could not summarize %s: %s", url, exc)
+                LOG.error("Could not summarize URL=%r error=%s", url, exc)
             else:
                 items.append((article, summary))
     if failures:
