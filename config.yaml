@@ -66,4 +66,4 @@ overlap_minutes: 0
 request_timeout_seconds: 20
 max_articles_per_blog: 20
 # Up to this many independent article fetches/Claude summaries run concurrently.
-article_workers: 2
+article_workers: 1
