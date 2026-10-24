@@ -5,7 +5,7 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import feedparser
 from bs4 import BeautifulSoup
@@ -30,6 +30,26 @@ def parse_date(value: str | None) -> datetime | None:
 def _text(value: str) -> str:
     return " ".join(BeautifulSoup(value or "", "html.parser").stripped_strings)
 
+def normalize_article_url(url: str) -> str:
+    """Clean common feed-link punctuation without altering query parameters."""
+    url = (url or "").strip()
+
+    # Remove surrounding quotes or angle brackets, not URL-internal characters.
+    url = url.strip("<>\"'")
+
+    parts = urlsplit(url)
+
+    # Some feed/parser output may include sentence punctuation at the end
+    # of a path. Remove only trailing colon/semicolon from the path.
+    path = parts.path.rstrip(":;")
+
+    return urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        path,
+        parts.query,
+        parts.fragment,
+    ))
 
 def discover_feed(client, blog: dict) -> list[Article]:
     body = get(client, blog["feed_url"]).content
@@ -39,7 +59,7 @@ def discover_feed(client, blog: dict) -> list[Article]:
     articles = []
     for entry in feed.entries:
         published = parse_date(entry.get("published") or entry.get("updated"))
-        url = entry.get("link")
+        url = normalize_article_url(entry.get("link", ""))
         title = _text(entry.get("title", ""))
         if published and url and title:
             articles.append(Article(title, url, published, blog["name"], _text(entry.get("summary", ""))))
@@ -53,7 +73,7 @@ def discover_sitemap(client, blog: dict) -> list[Article]:
         raise ValueError("sitemap index is not supported; configure a post sitemap URL")
     articles = []
     for node in root.findall(f"{namespace}url"):
-        loc = node.findtext(f"{namespace}loc")
+        loc = normalize_article_url(node.findtext(f"{namespace}loc") or "")
         published = parse_date(node.findtext(f"{namespace}lastmod"))
         if loc and published:
             # A sitemap lacks titles; this readable fallback is replaced by page title when fetched.
@@ -73,7 +93,8 @@ def discover_html(client, blog: dict) -> list[Article]:
         title_node = node.select_one(spec.get("title_selector", "h1, h2, h3"))
         published = parse_date((date_node.get("datetime") if date_node else None) or (date_node.get_text(" ") if date_node else None))
         if link and title_node and published and link.get("href"):
-            articles.append(Article(_text(str(title_node)), urljoin(blog["url"], link["href"]), published, blog["name"]))
+            article_url = normalize_article_url(urljoin(blog["url"], link["href"]))
+            articles.append(Article(_text(str(title_node)), article_url, published, blog["name"]))
     return articles
 
 
