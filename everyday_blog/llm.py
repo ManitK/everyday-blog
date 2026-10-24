@@ -5,7 +5,6 @@ from openai import OpenAI
 
 
 def summarize(article, excerpt: str) -> str:
-    """Generate a concise article gist using Groq's GPT-OSS 120B."""
     client = OpenAI(
         api_key=os.environ["GROQ_API_KEY"],
         base_url="https://api.groq.com/openai/v1",
@@ -28,19 +27,19 @@ Excerpt:
 {excerpt}"""
 
     response = client.chat.completions.create(
-        model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        max_completion_tokens=140,
-        temperature=0,
+        model=model,  # keep your existing model variable
+        messages=messages,  # keep your existing messages variable
+        reasoning_effort="none",
+        max_completion_tokens=256,
     )
 
-    summary = response.choices[0].message.content
-    if not summary or not summary.strip():
-        raise ValueError("Groq returned an empty summary")
-
-    return summary.strip()
+    choice = response.choices[0]
+    summary = (choice.message.content or "").strip()
+    
+    if not summary:
+        raise ValueError(
+            "Groq returned empty content: "
+            f"finish_reason={choice.finish_reason!r}"
+        )
+    
+    return summary
